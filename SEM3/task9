@@ -1,0 +1,162 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+#include <windows.h>
+#include <vector>
+
+using namespace std;
+void init(double** aircraft, int n, double& v);
+void taska9(double** aircraft, double* L, double* D, double* a, int n, double p, double g, double& v);
+void result(double* a,int n);
+
+int main() {
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	cout << fixed << setprecision(2);
+	const double p = 0.17;
+	const double g = 9.81;
+
+	int n; double v;
+	cout << "Ââåäèòå ÷èñëî ñàìîë¸òîâ: ";
+	cin >> n;
+	while (n <= 0 || cin.fail())
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Îøèáêà! Ââåäèòå öåëîå ïîëîæèòåëüíîå ÷èñëî: ";
+		cin >> n;
+	}
+	cin.ignore(1000, '\n');
+	
+	double** aircraft = new double*[n];
+	init(aircraft, n, v);
+	double* L = new double[n];
+	double* D = new double[n];
+	double* a = new double[n];
+	taska9(aircraft, L, D, a, n, p, g, v);
+	result(a, n);
+
+
+
+	for (int i = 0; i < n; i++) {
+		delete[] aircraft[i];
+	}
+	delete[] aircraft;
+	delete[] D; delete[] L; delete[] a;
+	return 0;
+}
+
+void init(double** aircraft, int n, double &v)
+{
+	cout << "Ââåäèòå ñêîðîñòü ñàìîë¸òîâ(ì/ñ): ";
+	cin >> v;
+	while (v <= 0 || cin.fail())
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Îøèáêà! Ââåäèòå ïîëîæèòåëüíîå ÷èñëî: ";
+		cin >> v;
+	}
+	cin.ignore(1000, '\n');
+
+	vector < string > parameters = { "'ìàññà' (êã)", "'ïëîùàäü êðûëà'(ì^2)", "'òÿãà'(Í)", "'êîýôôèöèåíò ñîïðîòèâëåíèÿ'", "'êîýôôèöèåíò ïîäú¸ìíîé ñèëû'" };
+	for (int i = 0; i < n; i++)
+	{
+		aircraft[i] = new double[5];
+	}
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			cout << "Ââåäèòå ïàðàììåòð " << parameters[j] << " ñàìîë¸òà " << i+1 << " : ";
+			cin >> aircraft[i][j];
+
+			while (aircraft[i][j] <= 0 || cin.fail())
+			{
+				cin.clear();
+				cin.ignore(1000, '\n');
+				cout << "Îøèáêà! Ââåäèòå ïîëîæèòåëüíîå ÷èñëî: ";
+				cin >> aircraft[i][j];
+			}
+			cin.ignore(1000, '\n');
+		}
+	}
+
+	cout << "\n=== ÏÐÎÂÅÐÊÀ ÂÂÅÄÅÍÍÛÕ ÄÀÍÍÛÕ ===" << endl;
+	for (int i = 0; i < n; i++) {
+		cout << "Ñàìîë¸ò " << i + 1 << ": ";
+		for (int j = 0; j < 5; j++) {
+			cout << aircraft[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+
+void taska9(double** aircraft, double* L, double* D, double* a, int n,const double p,const double g, double& v)
+{
+	for (int i = 0; i < n; i++)
+	{
+		L[i] = 0.5 * p * v * v * aircraft[i][1] * aircraft[i][4];
+		D[i] = 0.5 * p * v * v * aircraft[i][1] * aircraft[i][3];
+		double ax = (aircraft[i][2] - D[i]) / aircraft[i][0]; double ay = (L[i] - g * aircraft[i][0]) / aircraft[i][0];
+		a[i] = sqrt(pow(ax, 2) + pow(ay, 2));
+	}
+	
+}
+
+void result(double* a, int n)
+{
+	cout << "\n=== ÐÅÇÓËÜÒÀÒÛ ÐÀÑ×ÅÒÎÂ ===" << endl;
+	double max = a[0];
+	int count = 0;
+
+	for (int i = 1; i < n; i++)
+	{
+		if (max < a[i])
+		{
+			max = a[i];
+		}
+	}
+	for (int i = 0; i < n; i++)
+	{
+		if (max == a[i])
+		{
+			count++;
+		}
+	}
+
+	int* index_max = new int[count];
+	int k = 0;
+	for (int i = 0; i < n; i++)
+	{
+		if (max == a[i])
+		{
+			index_max[k] = i;
+			k++;
+		}
+	}
+	if (n == 1)
+	{
+		cout << "Ñàìîë¸ò " << 1 << " èìååò óñêîðåíèå " << max << " ì/c^2.";
+	}
+	else if (k == n)
+	{
+		cout << "Ó âñåõ ñàìîë¸òîâ îäèíàêîâîå óñêîðåíèå."<< endl;
+	}
+	else if (k == 1)
+	{
+		cout << "Ñàìîë¸ò " << index_max[k-1]+1 << " èìååò íàèáîëüøåå óñêîðåíèå " << max << " ì/c^2.";
+	}
+	else
+	{
+		cout << "Ñàìîë¸òû ";
+		for (int i = 0; i < k-1; i++)
+		{
+			cout << index_max[i]+1 << " ,";
+		}
+		cout << " è " << index_max[k-1] + 1  << " èìåþò íàèáîëüøåå óñêîðåíèå " << max << " ì/c^2.";
+	}
+	
+	
+	delete[] index_max;
+}
