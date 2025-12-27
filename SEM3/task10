@@ -1,0 +1,109 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+#include<windows.h>
+using namespace std;
+void init(double& T_min, double& T_max, double &dT, double& h, double& m);
+
+
+int main() {
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	cout << fixed << setprecision(2);
+	double T_min, T_max, dT, h, m;
+	init(T_min, T_max, dT, h, m);
+
+	double ay, th, Tmin, tmin;
+	const double g = 9.81;
+
+	if (T_min <= m * g) {
+		cout << "Îøèáêà: Ìèíèìàëüíàÿ òÿãà äîëæíà áûòü áîëüøå âåñà ñàìîëåòà ("
+			<< m * g << " Í) äëÿ îáåñïå÷åíèÿ ïîäúåìà!" << endl;
+		return 1;
+	}
+
+	ay = (T_max - m * g) / m;
+	tmin = sqrt(2 * h / ay);
+	Tmin = T_min;
+	for (double i = T_min; i <= T_max; i += dT)
+	{
+		
+		if (T_max - i < dT)
+		{
+			i = T_max;
+		}
+		ay = (i - m * g) / m;
+		th = sqrt(2 * h / ay);
+		if (tmin > th)
+		{
+			tmin = th;
+			Tmin = i;
+		}
+
+		if (i == T_max)
+		{
+			break;
+		}
+	}
+
+	cout << "Îïòèìàëüíîå çíà÷åíèå òÿãè T = " << Tmin << "Í, êîòîðîìó ñîîòâåòñòâóåò ìèíèìàëüíîå âðåìÿ t = " << tmin << "ñ." << endl;
+	return 0;
+}
+
+void init(double& T_min, double& T_max, double& dT, double& h, double& m)
+{
+	cout << "Ââåäèòå âûñîòó ïîë¸òà (ì): ";
+	cin >> h;
+	while (h <= 0 || cin.fail())
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Îøèáêà! Ââåäèòå ïîëîæèòåëüíîå ÷èñëî: ";
+		cin >> h;
+	}
+	cin.ignore(1000, '\n');
+
+	cout << "Ââåäèòå ìàññó ñàìîë¸òà (êã): ";
+	cin >> m;
+	while (m <= 0 || cin.fail())
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Îøèáêà! Ââåäèòå ïîëîæèòåëüíîå ÷èñëî: ";
+		cin >> m;
+	}
+	cin.ignore(1000, '\n');
+
+	cout << "Ââåäèòå ìèíèìàëüíóþ òÿãó (Í): ";
+	cin >> T_min;
+	while (T_min < 0 || cin.fail())
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Îøèáêà! Ââåäèòå íåîòðèöàòåëüíîå ÷èñëî: ";
+		cin >> T_min;
+	}
+	cin.ignore(1000, '\n');
+
+	cout << "Ââåäèòå ìàêñèìàëüíóþ òÿãó (Í): ";
+	cin >> T_max;
+	while (cin.fail() || T_max <= T_min)
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Îøèáêà! Ââåäèòå ïîëîæèòåëüíîå ÷èñëî áîëüøå " << T_min << "Í : ";
+		cin >> T_max;
+	}
+	cin.ignore(1000, '\n');
+
+	cout << "Ââåäèòå øàã (Í): ";
+	cin >> dT;
+	while (cin.fail() || T_max-T_min < dT || dT <= 0)
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Îøèáêà! Ââåäèòå ïîëîæèòåëüíîå ÷èñëî ìåíüøåå èëè ðàâíîå T_max - T_min = " << T_max - T_min << "Í : ";
+		cin >> dT;
+	}
+	cin.ignore(1000, '\n');
+}
